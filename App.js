@@ -9,21 +9,25 @@ import ManageExpenses from "./screens/ManageExpenses";
 import './gesture-handler';
 import { GlobalStyles } from "./constants/styles";
 import { Ionicons } from "@expo/vector-icons"
+import IconButton from "./components/ui/IconButton";
+import { ExpensesContextProvider } from "./store/expense-content";
 
 export default function App() {
   const Stack =createStackNavigator();
   const BootomTab = createBottomTabNavigator();
-   const arr=[1,2,2]
-   console.log(arr.reduce((sum,ex)=>console.log(sum,ex)))
+
   function ExpenseOverview(){
     return(
       <BootomTab.Navigator
-      screenOptions={{
+      screenOptions={({ navigation })=>({
         headerStyle: { backgroundColor: GlobalStyles.colors.primary500},
         headerTintColor:'white',
         tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500},
-        tabBarActiveTintColor: GlobalStyles.colors.accent500
-      }}
+        tabBarActiveTintColor: GlobalStyles.colors.accent500,
+        headerRight:({ tintColor })=>{
+          return <IconButton icon={'add'} size={24} color={tintColor} onPress={()=>navigation.navigate('ManageExpenses')}/>
+        }
+      })}
       >
         <BootomTab.Screen name="RecentExpenses" component={RecentExpenses} options={{
           title: 'Recent Expenses',
@@ -46,14 +50,21 @@ export default function App() {
   return (
     <>
       <StatusBar style='auto' />
+      <ExpensesContextProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="ExpenseOverview">
+        <Stack.Navigator initialRouteName="ExpenseOverview"
+        screenOptions={{
+          headerStyle: { backgroundColor: GlobalStyles.colors.primary500},
+        headerTintColor:'white',}
+        }
+        >
         <Stack.Screen name="ManageExpenses" component={ManageExpenses}/>
         <Stack.Screen name="ExpenseOverview" component={ExpenseOverview} options={{
           headerShown:false
         }}/>
         </Stack.Navigator>
       </NavigationContainer>
+      </ExpensesContextProvider>
     </>
   );
 }
